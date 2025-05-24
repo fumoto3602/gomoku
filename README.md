@@ -1,0 +1,2 @@
+# gomoku
+My Gomoku Game

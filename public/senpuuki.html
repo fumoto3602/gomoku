@@ -2,126 +2,130 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>せんぷうき</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>扇風機</title>
 
 <style>
   body {
-    text-align: center;
-    font-family: sans-serif;
-    background: #f5f5f5;
+    margin: 0;
+    height: 100vh;
+    background: #f2f2f2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
   }
 
-  /* 扇風機外枠 */
-  #fan {
-    width: 360px;
-    height: 360px;
-    margin: 40px auto;
-    border-radius: 50%;
-    background: radial-gradient(#ddd, #aaa);
-    border: 12px solid #666;
+  .fan {
+    width: min(90vw, 90vh);
+    height: min(90vw, 90vh);
     position: relative;
   }
 
-  /* 羽全体 */
-  #blades {
+  /* 羽根 */
+  .blades {
     width: 100%;
     height: 100%;
-    position: absolute;
+    border-radius: 50%;
+    position: relative;
+  }
+
+  /* 回転中 */
+  .rotate {
+    animation: spin 0.25s linear infinite;
   }
 
   .blade {
     position: absolute;
-    width: 50px;
-    height: 150px;
-    top: 40px;
+    width: 45%;
+    height: 12%;
+    background: #2f80ed;
+    top: 44%;
     left: 50%;
-    transform-origin: bottom center;
-    border-radius: 25px 25px 10px 10px;
-    background: linear-gradient(to right, #7fbfff, #3a7bd5, #7fbfff);
-    opacity: 0.9;
+    transform-origin: 0% 50%;
+    border-radius: 20px;
   }
 
-  .b1 { transform: translateX(-50%) rotate(0deg); }
-  .b2 { transform: translateX(-50%) rotate(90deg); }
-  .b3 { transform: translateX(-50%) rotate(180deg); }
-  .b4 { transform: translateX(-50%) rotate(270deg); }
+  .blade:nth-child(1) { transform: rotate(0deg); }
+  .blade:nth-child(2) { transform: rotate(90deg); }
+  .blade:nth-child(3) { transform: rotate(180deg); }
+  .blade:nth-child(4) { transform: rotate(270deg); }
 
-  #center {
+  .center {
     position: absolute;
-    width: 50px;
-    height: 50px;
-    background: radial-gradient(#666, #222);
+    width: 18%;
+    height: 18%;
+    background: #555;
     border-radius: 50%;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 10;
+    top: 41%;
+    left: 41%;
+    z-index: 2;
   }
 
-  .rotate {
-    animation: spin 0.35s linear infinite;
-    filter: blur(1.5px);
+  .guard {
+    position: absolute;
+    inset: 0;
+    border: 6px solid #aaa;
+    border-radius: 50%;
+    box-sizing: border-box;
+  }
+
+  button {
+    margin-top: 24px;
+    font-size: 1.3rem;
+    padding: 14px 26px;
+    border: 5px solid red;
+    background: white;
+    border-radius: 14px;
+    cursor: pointer;
   }
 
   @keyframes spin {
     from { transform: rotate(0deg); }
     to   { transform: rotate(360deg); }
   }
-
-  /* 🔴 目立つ赤枠ボタン */
-  button {
-    font-size: 26px;
-    padding: 14px 50px;
-    margin-top: 20px;
-    border: 5px solid red;
-    border-radius: 16px;
-    background: #fff;
-    cursor: pointer;
-  }
-
-  button:active {
-    background: #ffe5e5;
-  }
 </style>
 </head>
 
 <body>
 
-<h2>せんぷうき</h2>
-
-<div id="fan">
-  <div id="blades">
-    <div class="blade b1"></div>
-    <div class="blade b2"></div>
-    <div class="blade b3"></div>
-    <div class="blade b4"></div>
+<div class="fan">
+  <div class="blades" id="blades">
+    <div class="blade"></div>
+    <div class="blade"></div>
+    <div class="blade"></div>
+    <div class="blade"></div>
   </div>
-  <div id="center"></div>
+  <div class="center"></div>
+  <div class="guard"></div>
 </div>
 
-<button onclick="toggleFan()">まわす / とめる</button>
+<button id="toggleBtn">まわす</button>
 
-<!-- 🎵 音 -->
+<!-- 効果音ラボ -->
 <audio id="fanSound" src="fan.mp3" loop></audio>
 
 <script>
-  let isOn = false;
+  const blades = document.getElementById("blades");
+  const button = document.getElementById("toggleBtn");
+  const sound = document.getElementById("fanSound");
 
-  function toggleFan() {
-    const blades = document.getElementById("blades");
-    const sound = document.getElementById("fanSound");
+  let isRunning = false;
 
-    isOn = !isOn;
-
-    if (isOn) {
+  button.addEventListener("click", () => {
+    if (isRunning) {
+      blades.classList.remove("rotate");
+      sound.pause();
+      button.textContent = "まわす";
+    } else {
       blades.classList.add("rotate");
       sound.currentTime = 0;
       sound.play();
-    } else {
-      blades.classList.remove("rotate");
-      sound.pause();
+      button.textContent = "とめる";
     }
-  }
+    isRunning = !isRunning;
+  });
 </script>
 
 </body>

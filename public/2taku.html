@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>2たく えらぶ</title>
+
+<style>
+  body {
+    text-align: center;
+    font-family: sans-serif;
+    background: #f5f5f5;
+  }
+
+  h2 {
+    margin-top: 30px;
+  }
+
+  /* ===== ボタン ===== */
+  #lockBtn {
+    font-size: 24px;
+    padding: 12px 40px;
+    border: 5px solid red;
+    border-radius: 16px;
+    background: #fff;
+    margin-top: 20px;
+    cursor: pointer;
+  }
+
+  #lockBtn.locked {
+    background: #ffdede;
+    border-color: #999;
+  }
+
+  /* ===== 選択エリア ===== */
+  .choices {
+    display: flex;
+    justify-content: center;
+    gap: 150px;
+    margin-top: 40px;
+  }
+
+  .choice {
+    width: 300px;
+    border: 6px solid #333;
+    border-radius: 20px;
+    padding: 15px;
+    background: #fff;
+  }
+
+  .image-box {
+    width: 100%;
+    height: 200px;
+    border: 4px dashed #aaa;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    color: #777;
+    cursor: pointer;
+  }
+
+  .image-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 10px;
+  }
+
+  input[type="text"] {
+    width: 90%;
+    margin-top: 15px;
+    font-size: 22px;
+    padding: 10px;
+    text-align: center;
+  }
+
+  input[type="file"] {
+    display: none;
+  }
+
+  /* 🔴 選ばれた表示 */
+  .selected {
+    border-color: red;
+    background: #ffecec;
+  }
+
+  /* 🔒 ロック中の見た目 */
+  .locked .image-box {
+    border-style: solid;
+    cursor: default;
+    color: #aaa;
+  }
+
+  .locked input {
+    background: #eee;
+  }
+</style>
+</head>
+
+<body>
+
+<h2>えらんでください</h2>
+
+<button id="lockBtn" onclick="lockMode()">じゅんびかんりょう</button>
+
+<div class="choices">
+
+  <!-- 選択肢1 -->
+  <div class="choice">
+    <div class="image-box" onclick="openFile(event, 0)">
+      タップして<br>しゃしんをえらぶ
+    </div>
+    <input type="file" accept="image/*" onchange="loadImage(event, 0)">
+    <input type="text" placeholder="ここに もじ">
+  </div>
+
+  <!-- 選択肢2 -->
+  <div class="choice">
+    <div class="image-box" onclick="openFile(event, 1)">
+      タップして<br>しゃしんをえらぶ
+    </div>
+    <input type="file" accept="image/*" onchange="loadImage(event, 1)">
+    <input type="text" placeholder="ここに もじ">
+  </div>
+
+</div>
+
+<script>
+  let locked = false;
+
+  function lockMode() {
+    locked = true;
+    document.body.classList.add("locked");
+    document.getElementById("lockBtn").classList.add("locked");
+    document.getElementById("lockBtn").innerText = "えらんでね";
+  }
+
+  function openFile(e, index) {
+    if (locked) return;
+    e.stopPropagation();
+    document.querySelectorAll('input[type="file"]')[index].click();
+  }
+
+  function loadImage(e, index) {
+    if (locked) return;
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function () {
+      const box = document.querySelectorAll('.image-box')[index];
+      box.innerHTML = `<img src="${reader.result}">`;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  // ロック後は「選ぶ」だけ
+  document.querySelectorAll(".choice").forEach(choice => {
+    choice.addEventListener("click", () => {
+      if (!locked) return;
+
+      document.querySelectorAll(".choice").forEach(c => {
+        c.classList.remove("selected");
+      });
+      choice.classList.add("selected");
+    });
+  });
+</script>
+
+</body>
+</html>
